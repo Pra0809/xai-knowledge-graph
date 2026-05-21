@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Credentials
+aura-creds.txt
+*.env
+.env
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/
+
