@@ -1,0 +1,10 @@
+arxiv
+requests
+pandas
+tqdm
+neo4j
+rdflib
+owlrl
+pykeen
+streamlit
+keybert
