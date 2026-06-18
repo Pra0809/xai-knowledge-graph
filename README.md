@@ -106,7 +106,7 @@ TransE's simpler translational geometry doesn't need that signal density. Applyi
 
 **Author similarity** found a known limitation. Querying for authors near S. Lapuschkin in the RotatE+NSSALoss embeddings recovered the Berlin XAI cluster including *both* "W. Samek" and "Wojciech Samek" — the embeddings learned these are the same person despite being stored as separate string-keyed nodes. Useful evidence that learned representations can recover entity identity beyond surface-form dedup.
 
-Notebooks: [`train_transe_basline.ipynb`](notebooks/train_transe_baseline.ipynb), [`train_transe_tuned.ipynb`](notebooks/train_transe_tuned.ipynb), [`train_rotate_baseline.ipynb`](notebooks/train_rotate_baseline.ipynb), [`train_rotate_tuned.ipynb`](notebooks/train_rotate_tuned.ipynb), [`link_prediction.ipynb`](notebooks/link_prediction.ipynb)
+Notebooks: [`train_transe_baseline.ipynb`](notebooks/train_transe_baseline.ipynb), [`train_transe_tuned.ipynb`](notebooks/train_transe_tuned.ipynb), [`train_rotate_baseline.ipynb`](notebooks/train_rotate_baseline.ipynb), [`train_rotate_tuned.ipynb`](notebooks/train_rotate_tuned.ipynb), [`link_prediction.ipynb`](notebooks/link_prediction.ipynb)
 
 ### 4. GraphRAG vs vanilla RAG
 End-to-end natural-language QA pipeline: question → Cypher → graph results → LLM answer. Three-layer safety architecture:
