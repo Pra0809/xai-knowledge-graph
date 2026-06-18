@@ -62,7 +62,7 @@ xai-knowledge-graph/
 ### 1. Property graph (Neo4j Aura)
 - 4 node types (Paper, Author, Venue, Topic), 4 relationship types
 - 11 Cypher queries covering aggregations, multi-hop joins, and per-group ranking
-- Schema diagram in ![Schema diagram](docs/Schema.png)
+- ![Schema diagram](docs/Schema.png)
 - Notebook: [`notebooks/neo4j_cypher_queries.ipynb`](notebooks/neo4j_cypher_queries.ipynb)
 
 ### 2. Semantic web (RDF + OWL)
