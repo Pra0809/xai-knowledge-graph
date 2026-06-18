@@ -1,0 +1,121 @@
+@prefix :        <http://xai-kg.example.org/> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+#####################################################################
+# Ontology header
+#####################################################################
+: a owl:Ontology ;
+    dcterms:title "XAI Knowledge Graph Ontology" ;
+    dcterms:description "A small ontology for representing Explainable AI research papers, their authors, venues, and topics, with OWL RL axioms supporting reasoning over works-on and citation relationships." ;
+    dcterms:creator "Prashant Chandra" ;
+    owl:versionInfo "0.1" .
+
+#####################################################################
+# Classes
+#####################################################################
+:Paper a owl:Class ;
+    rdfs:label   "Paper" ;
+    rdfs:comment "A research paper in the XAI corpus." .
+
+:Author a owl:Class ;
+    rdfs:subClassOf foaf:Person ;
+    rdfs:label   "Author" ;
+    rdfs:comment "An author of one or more papers. Aligned with foaf:Person." .
+
+:Venue a owl:Class ;
+    rdfs:label   "Venue" ;
+    rdfs:comment "A publication venue: conference, journal, or arXiv." .
+
+:Topic a owl:Class ;
+    rdfs:label   "Topic" ;
+    rdfs:comment "An XAI research topic or method (e.g., SHAP, Grad-CAM, Interpretability)." .
+
+#####################################################################
+# Object properties — directly asserted
+#####################################################################
+:authored a owl:ObjectProperty ;
+    rdfs:domain  :Author ;
+    rdfs:range   :Paper ;
+    rdfs:label   "authored" ;
+    rdfs:comment "Connects an author to a paper they authored." .
+
+:cites a owl:ObjectProperty ;
+    rdfs:domain  :Paper ;
+    rdfs:range   :Paper ;
+    rdfs:label   "cites" ;
+    rdfs:comment "Connects a citing paper to a cited paper. Direction: citing -> cited." .
+
+:publishedIn a owl:ObjectProperty ;
+    rdfs:domain  :Paper ;
+    rdfs:range   :Venue ;
+    rdfs:label   "publishedIn" ;
+    rdfs:comment "Connects a paper to the venue where it was published." .
+
+:about a owl:ObjectProperty ;
+    rdfs:domain  :Paper ;
+    rdfs:range   :Topic ;
+    rdfs:label   "about" ;
+    rdfs:comment "Connects a paper to the topics it addresses." .
+
+#####################################################################
+# Object properties — DERIVED by the reasoner
+#####################################################################
+
+# Reasoning Axiom 1: Property chain
+# If an Author A authored Paper P, and P is :about Topic T, then A :worksOn T.
+# This lets us ask "who works on X" without explicitly maintaining that link.
+:worksOn a owl:ObjectProperty ;
+    rdfs:domain  :Author ;
+    rdfs:range   :Topic ;
+    rdfs:label   "worksOn" ;
+    rdfs:comment "Derived: an author works on a topic if they have authored at least one paper about that topic." ;
+    owl:propertyChainAxiom ( :authored :about ) .
+
+# Reasoning Axiom 2: Inverse property
+# If P1 :cites P2, then P2 :isCitedBy P1. The reasoner generates the inverse direction.
+:isCitedBy a owl:ObjectProperty ;
+    rdfs:domain  :Paper ;
+    rdfs:range   :Paper ;
+    rdfs:label   "isCitedBy" ;
+    rdfs:comment "Derived inverse of :cites. Automatically populated by the reasoner." ;
+    owl:inverseOf :cites .
+
+#####################################################################
+# Data properties
+#####################################################################
+:arxivId a owl:DatatypeProperty ;
+    rdfs:domain  :Paper ;
+    rdfs:range   xsd:string ;
+    rdfs:label   "arxivId" .
+
+:title a owl:DatatypeProperty ;
+    rdfs:subPropertyOf dcterms:title ;
+    rdfs:domain  :Paper ;
+    rdfs:range   xsd:string ;
+    rdfs:label   "title" .
+
+:abstract a owl:DatatypeProperty ;
+    rdfs:subPropertyOf dcterms:abstract ;
+    rdfs:domain  :Paper ;
+    rdfs:range   xsd:string ;
+    rdfs:label   "abstract" .
+
+:year a owl:DatatypeProperty ;
+    rdfs:domain  :Paper ;
+    rdfs:range   xsd:integer ;
+    rdfs:label   "year" .
+
+:citationCount a owl:DatatypeProperty ;
+    rdfs:domain  :Paper ;
+    rdfs:range   xsd:integer ;
+    rdfs:label   "citationCount" .
+
+:name a owl:DatatypeProperty ;
+    rdfs:subPropertyOf foaf:name ;
+    rdfs:range   xsd:string ;
+    rdfs:label   "name" .
