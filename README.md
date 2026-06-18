@@ -46,10 +46,23 @@ All metrics are reproducible from the notebooks in this repo.
                        Benchmark vs Vanilla RAG
 ```
 
+## Project structure
+
+```
+xai-knowledge-graph/
+├── docs/              # Schema diagram
+├── notebooks/         # 10 reproducible notebooks (data → KG → embeddings → RAG)
+├── ontology/          # xai-kg.ttl — custom OWL ontology with FOAF/Dublin Core alignment
+├── src/               # graphrag.py — production-ready GraphRAG module with safety layers
+├── models/            # Trained PyKEEN checkpoints (TransE × 2, RotatE × 2)
+├── requirements.txt
+└── README.md
+```
+
 ### 1. Property graph (Neo4j Aura)
 - 4 node types (Paper, Author, Venue, Topic), 4 relationship types
 - 11 Cypher queries covering aggregations, multi-hop joins, and per-group ranking
-- Schema diagram in [`docs/Schema.png`](docs/Schema.png)
+- Schema diagram in ![Schema diagram](docs/Schema.png)
 - Notebook: [`notebooks/neo4j_cypher_queries.ipynb`](notebooks/neo4j_cypher_queries.ipynb)
 
 ### 2. Semantic web (RDF + OWL)
@@ -105,6 +118,23 @@ Tested against **5 destructive prompts** ("delete all", "drop database", etc.) �
 
 Compared against a vanilla RAG baseline (sentence-transformer embeddings of abstracts, top-k cosine retrieval, same LLM). 10 questions spanning factual, multi-hop, and conceptual categories were scored by an LLM judge on 4 criteria.
 
+**Example interaction:**
+
+> **Q:** Find papers that cite Grad-CAM and are about Healthcare applications.
+>
+> **Generated Cypher:**
+> ```cypher
+> MATCH (p:Paper)-[:CITES]->(t:Paper)
+> WHERE t.title CONTAINS "Grad-CAM"
+> MATCH (p)-[:ABOUT]->(:Topic {name: "Healthcare"})
+> RETURN p.title, p.year, p.citation_count
+> ORDER BY p.citation_count DESC LIMIT 5
+> ```
+>
+> **Answer:** Top papers citing Grad-CAM in healthcare: "Explainable AI in deep learning-based medical image analysis" (2021, 1012 citations), "XAI: Opportunities and Challenges Survey" (2020, 749), "Medical Explainable AI via Multi-modal Data Fusion" (2021, 621)...
+
+
+
 | Metric | GraphRAG | Vanilla RAG |
 |---|---|---|
 | Win count | **6** | 4 |
@@ -158,8 +188,10 @@ cp .env.example ~/.env_xai_kg
 # fill in your keys
 
 # Then run notebooks in order:
-# data_ingestion → neo4j_cypher → rdf_sparql_owl → transe →
-# link_prediction → graphrag → vanilla_rag
+#data_ingestion → neo4j_cypher_queries → rdf_sparql_queries →
+#train_transe_baseline → train_transe_tuned →
+#train_rotate_baseline → train_rotate_tuned →
+#link_prediction → graphrag → vanilla_rag
 ```
 
 ---
